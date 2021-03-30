@@ -17,7 +17,7 @@ namespace Control
         public override string Name { get; } = "Control";
         public override string Prefix { get; } = "Control";
         public override string Author { get; } = "Jesus-QC";
-        public override Version Version { get; } = new Version(0, 0, 1, 1);
+        public override Version Version { get; } = new Version(0, 0, 1, 2);
         public override Version RequiredExiledVersion { get; } = new Version(2, 8, 0);
         public override PluginPriority Priority { get; } = PluginPriority.Lower;
 
@@ -33,7 +33,7 @@ namespace Control
         public AutoUpdater updater;
 
         private static List<CoroutineHandle> _coroutines = new List<CoroutineHandle>();
-        private static WebSocket ws;
+        public static WebSocket ws;
         public override void OnEnabled()
         {
             updater = new AutoUpdater(this);
@@ -175,7 +175,7 @@ namespace Control
         {
             maxPlayers = 0;
 
-            ws?.Send("QUICKINFO 0/0/0");
+            ws?.Send("2 0/0/0");
 
             if (!IsServerKeyValid)
                 InitializeControl();
@@ -358,9 +358,9 @@ namespace Control
             if (maxPlayers < Player.List.Count())
             {
                 maxPlayers = Player.List.Count();
-                ws?.Send($"MAXPLY {maxPlayers}");
+                ws?.Send($"4 {maxPlayers}");
             }
-            ws?.Send($"ADDPLY {ev.Player.UserId}");
+            ws?.Send($"3 {ev.Player.UserId}");
             ws?.Send(GetQuickInfo());
             CreateMessage("Verified", "(someone)", ev.Player.Nickname);
         }
@@ -448,7 +448,7 @@ namespace Control
                     };
 
                     ws.Connect();
-                    ws.Send("CONNECT " + Config.SecretKey);
+                    ws.Send("1 " + Config.SecretKey);
                 }
             }
             catch (Exception)
@@ -554,26 +554,33 @@ namespace Control
             var response = (HttpWebResponse)webRequest.GetResponse();
         }
 
-        public string GetQuickInfo()
-        {
-            return $"QUICKINFO {Player.List.Count()}/{Player.List.Count(x => Config.staffGroups.Contains(x.GroupName))}/{Player.List.Count(x => Config.adminGroups.Contains(x.GroupName))}";
-        }
-
+        // Websocket Handler
         public void OnWebsocketMessage(object sender, MessageEventArgs e)
         {
             var message = e.Data;
-            Console.WriteLine(message);
 
-            if (message == "QUICKINFO")
+            if(message.StartsWith("9"))
             {
-                ws.Send(GetQuickInfo());
+                Server.Shutdown();
             }
-            else if (message.Contains("UPDATE"))
+            else if(message.StartsWith("8"))
             {
-                if (message.Contains("WEB"))
+                Server.Restart();
+            }
+            else if (message.StartsWith("7"))
+            {
+                Round.ForceEnd();
+            }
+            else if(message.StartsWith("6"))
+            {
+                Round.Restart(true);
+            }
+            else if (message.StartsWith("5"))
+            {
+                if (message.Contains("0"))
                 {
                     ws.Close();
-                    Log.Info("Control - Web update received");
+                    Log.Info("Control - Websocket update received");
                     Timing.CallDelayed(30.0f, () => InitializeControl());
                 }
                 else
@@ -582,6 +589,14 @@ namespace Control
                     updater.CheckUpdates();
                 }
             }
+            else if (message == "2")
+            {
+                ws.Send(GetQuickInfo());
+            }
+        }
+        public string GetQuickInfo()
+        {
+            return $"2 {Player.List.Count()}/{Player.List.Count(x => Config.staffGroups.Contains(x.GroupName))}/{Player.List.Count(x => Config.adminGroups.Contains(x.GroupName))}";
         }
     }
 }
