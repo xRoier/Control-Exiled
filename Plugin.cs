@@ -482,7 +482,7 @@ namespace Control
 
         public void CreateMessage(string Event, string replaced1 = "", string replace1 = "", string replaced2 = "", string replace2 = "")
         {
-            if (!IsServerKeyValid)
+            if (!IsServerKeyValid && Event == "WaitingForPlayers")
             {
                 Log.Info($"Invalid server key");
                 return;
