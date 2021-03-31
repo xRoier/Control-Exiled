@@ -22,14 +22,13 @@ namespace Control
                 using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
                 {
                     var result = streamReader.ReadToEnd();
-                
                     if(new Version(result) > _plugin.Version)
                         Update();
                 }
             }
             catch (Exception)
             {
-                Log.Warn("There was an issue connecting to Control, the site may be under maintenance.");
+                Log.Warn("There was an issue updating the plugin.");
             }
             
         }
@@ -38,7 +37,7 @@ namespace Control
         {
             using (var client = new WebClient())
             {
-                client.DownloadFile("https://github.com/Jesus-QC/Control-Exiled/releases/latest/download/Control.dll", _plugin.GetPath()); 
+                client.DownloadFile("https://github.com/Jesus-QC/Control-Exiled/releases/latest/download/Control-Exiled.dll", _plugin.GetPath());
             }
         }
     }

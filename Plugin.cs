@@ -8,6 +8,7 @@ using Exiled.API.Features;
 using Exiled.Events.EventArgs;
 using Exiled.Loader;
 using MEC;
+using UnityEngine;
 using WebSocketSharp;
 
 namespace Control
@@ -17,7 +18,7 @@ namespace Control
         public override string Name { get; } = "Control";
         public override string Prefix { get; } = "Control";
         public override string Author { get; } = "Jesus-QC";
-        public override Version Version { get; } = new Version(0, 0, 1, 2);
+        public override Version Version { get; } = new Version(0, 0, 1, 3);
         public override Version RequiredExiledVersion { get; } = new Version(2, 8, 0);
         public override PluginPriority Priority { get; } = PluginPriority.Lower;
 
@@ -30,10 +31,11 @@ namespace Control
         public int maxPlayers;
         public bool IsServerKeyValid;
 
+        public static WebSocket ws;
         public AutoUpdater updater;
 
         private static List<CoroutineHandle> _coroutines = new List<CoroutineHandle>();
-        public static WebSocket ws;
+        
         public override void OnEnabled()
         {
             updater = new AutoUpdater(this);
@@ -179,6 +181,10 @@ namespace Control
 
             if (!IsServerKeyValid)
                 InitializeControl();
+
+            foreach (var coroutine in _coroutines)
+                Timing.KillCoroutines(coroutine);
+            _coroutines.Clear();
         }
 
         private void OnDecontaminating(DecontaminatingEventArgs ev)
@@ -203,15 +209,19 @@ namespace Control
         }
         private void OnSendingRemoteAdminCmd(SendingRemoteAdminCommandEventArgs ev)
         {
-            CreateMessage("SendingRemoteAdminCommand", "(someone)", ev.Sender.Nickname, "(command)", ev.Name);
+            CreateMessage("SendingRemoteAdminCommand", "(someone)", ev.Sender?.Nickname ?? "Server Console", "(command)", ev.Name);
         }
         private void OnSendingConsoleCommand(SendingConsoleCommandEventArgs ev)
         {
-            CreateMessage("SendingConsoleCommand", "(someone)", ev.Player.Nickname, "(command)", ev.Name);
+            CreateMessage("SendingConsoleCommand", "(someone)", ev.Player?.Nickname ?? "Server Console", "(command)", ev.Name);
         }
         private void OnWaiting()
         {
             CreateMessage("WaitingForPlayers");
+            if (!IsServerKeyValid)
+            {
+                Log.Warn("INVALID SERVER KEY");
+            }
         }
         private void OnRoundStarted()
         {
@@ -398,32 +408,6 @@ namespace Control
             public string avatar_url { get; set; }
             public string content { get; set; }
             public bool tts { get; set; }
-            public DiscordMessageEmbed[] embeds { get; set; }
-        }
-        public class DiscordMessageEmbed
-        {
-            public int? color { get; set; }
-            public DiscordMessageEmbedAuthor author { get; set; }
-            public string title { get; set; }
-            public string url { get; set; }
-            public string description { get; set; }
-            public DiscordMessageEmbedImage image { get; set; }
-            public DiscordMessageEmbedFooter footer { get; set; }
-        }
-        public class DiscordMessageEmbedAuthor
-        {
-            public string name { get; set; }
-            public string url { get; set; }
-            public string icon_url { get; set; }
-        }
-        public class DiscordMessageEmbedImage
-        {
-            public string url { get; set; }
-        }
-        public class DiscordMessageEmbedFooter
-        {
-            public string text { get; set; }
-            public string icon_url { get; set; }
         }
 
         public void InitializeControl()
@@ -444,7 +428,7 @@ namespace Control
                     ws.OnClose += (e, sender) =>
                     {
                         IsServerKeyValid = false;
-                        Log.Warn("Disconnected from websocket | Trying to reconnect in 10 seconds");
+                        Log.Warn("Disconnected from websocket (Usually web updates) | Trying to reconnect in Round Restart");
                     };
 
                     ws.Connect();
@@ -482,15 +466,15 @@ namespace Control
 
         public void CreateMessage(string Event, string replaced1 = "", string replace1 = "", string replaced2 = "", string replace2 = "")
         {
-            if (!IsServerKeyValid && Event == "WaitingForPlayers")
+            if (!IsServerKeyValid)
             {
-                Log.Info($"Invalid server key");
+                Log.Debug($"Invalid server key.", Config.AreDebugLogsEnabled);
                 return;
             }
 
             if (webhookList[Event] == "https://discord.com/api/webhooks/samplewebhookurl")
             {
-                Log.Info($"The webhook for the event {Event} isn't configured.");
+                Log.Debug($"The webhook for the event {Event} isn't configured.", Config.AreDebugLogsEnabled);
                 return;
             }
 
@@ -508,35 +492,11 @@ namespace Control
             {
                 username = Config.Username,
                 avatar_url = Config.AvatarUrl,
-                content = " ",
+                content = $"**[{DateTime.Now:T}] [{Event}]** {desc}",
                 tts = false,
-                embeds = new DiscordMessageEmbed[]
-                {
-                    new DiscordMessageEmbed()
-                    {
-                        author = new DiscordMessageEmbedAuthor()
-                        {
-                            name = "Control",
-                            icon_url = "https://imgur.com/ZvHGf6D.png",
-                            url = "https://control.jesus-qc.es",
-                        },
-                        color = int.Parse("#FFFFFF".Replace("#", ""), System.Globalization.NumberStyles.HexNumber),
-                        description = desc,
-                        footer = new DiscordMessageEmbedFooter()
-                        {
-                            icon_url = "",
-                            text = DateTime.Now.ToString("dddd, dd MMMM yyyy HH:mm:ss"),
-                        },
-                        image = new DiscordMessageEmbedImage()
-                        {
-                            url = Config.EmbedImage,
-                        },
-                        title = Event,
-                    }
-                }
             };
 
-            SendMessage(msg, webhookList[Event]);
+            Timing.CallDelayed(UnityEngine.Random.Range(0.1f, 5.0f), () => SendMessage(msg, webhookList[Event]));
         }
 
         public void SendMessage(Message message, string url)

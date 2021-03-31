@@ -6,6 +6,7 @@ namespace Control
     public sealed class Config : IConfig
     {
         public bool IsEnabled { get; set; } = true;
+        public bool AreDebugLogsEnabled { get; set; } = false;
 
         [Description("Get your server key in the website (Keep this secret!)")]
         public string SecretKey { get; set; } = "0000000000000000000000000000000";
@@ -17,7 +18,6 @@ namespace Control
         [Description("Webhook configs")] 
         public string Username { get; set; } = "Control Logs";
         public string AvatarUrl { get; set; } = "https://imgur.com/ZvHGf6D.png";
-        public string EmbedImage { get; set; } = "https://imgur.com/fI0eyHS.png";
 
         public string yamlTranslation = @"Decontaminating: Light zone is in decontamination.
 GeneratorActivated: A generator was activated!
