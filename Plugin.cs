@@ -20,7 +20,7 @@ namespace Control
         public override string Name { get; } = "Control";
         public override string Prefix { get; } = "Control";
         public override string Author { get; } = "Jesus-QC";
-        public override Version Version { get; } = new Version(0, 0, 1, 3);
+        public override Version Version { get; } = new Version(0, 0, 1, 4);
         public override Version RequiredExiledVersion { get; } = new Version(2, 8, 0);
         public override PluginPriority Priority { get; } = PluginPriority.Lower;
 
