@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Mime;
+using System.Text.RegularExpressions;
 using Exiled.API.Enums;
 using Exiled.API.Features;
 using Exiled.Events.EventArgs;
@@ -514,12 +516,50 @@ namespace Control
             var response = (HttpWebResponse)webRequest.GetResponse();
         }
 
+        public void downloadPluginById(string id)
+        {
+            string downloadLink;
+
+            var httpWebRequest = (HttpWebRequest) WebRequest.Create($"https://plugins.exiled.host/api/plugins/{id}");
+            httpWebRequest.Method = "GET";
+            var httpResponse = (HttpWebResponse) httpWebRequest.GetResponse();
+            using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
+            {
+                downloadLink = Regex.Match(streamReader.ReadToEnd(), "(.*)link\":\"(.*)\"}}").Groups[2].Value.Replace("\\", "");
+            }
+            using (var client = new WebClient())
+            {
+                client.DownloadFile(downloadLink, Path.Combine(Paths.Plugins, getFileName(downloadLink)));
+            }
+        }
+        public static string getFileName(string url)
+        {
+            HttpWebRequest req =
+                (HttpWebRequest) WebRequest.Create(url);
+            HttpWebResponse resp = req.GetResponse() as HttpWebResponse;
+            string header_contentDisposition = resp.Headers["content-disposition"];
+            string escaped_filename = new ContentDisposition(header_contentDisposition).FileName;
+
+            return Uri.UnescapeDataString(escaped_filename);
+        }
+        
         // Websocket Handler
         public void OnWebsocketMessage(object sender, MessageEventArgs e)
         {
             var message = e.Data;
 
-            if(message.StartsWith("9"))
+            if(message.StartsWith("10"))
+            {
+                try
+                {
+                    downloadPluginById(message.Split(' ')[1]);
+                }
+                catch (Exception)
+                {
+                    Log.Error($"Control couldn't download the plugin with the id {message.Split(' ')[1]}");
+                }
+            }
+            else if(message.StartsWith("9"))
             {
                 Server.Shutdown();
             }

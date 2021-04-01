@@ -15,14 +15,13 @@ namespace Control
         {
             try
             {
-                var httpWebRequest = (HttpWebRequest)WebRequest.Create("https://control.jesus-qc.es/api/version");
+                var httpWebRequest = (HttpWebRequest) WebRequest.Create("https://control.jesus-qc.es/api/version");
                 httpWebRequest.Method = "GET";
-            
-                var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
+                var httpResponse = (HttpWebResponse) httpWebRequest.GetResponse();
                 using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
                 {
                     var result = streamReader.ReadToEnd();
-                    if(new Version(result) > _plugin.Version)
+                    if (new Version(result) > _plugin.Version)
                         Update();
                 }
             }
@@ -30,7 +29,7 @@ namespace Control
             {
                 Log.Warn("There was an issue updating the plugin.");
             }
-            
+
         }
 
         public void Update()
