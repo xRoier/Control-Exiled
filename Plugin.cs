@@ -10,7 +10,6 @@ using Exiled.API.Features;
 using Exiled.Events.EventArgs;
 using Exiled.Loader;
 using MEC;
-using UnityEngine;
 using WebSocketSharp;
 
 namespace Control
@@ -323,11 +322,11 @@ namespace Control
         }
         private void OnKicked(KickedEventArgs ev)
         {
-            CreateMessage("Kicked", "(someone)", ev.Target.Nickname);
+            CreateMessage("Kicked", "(someone)", ev.Target?.Nickname ?? "UNKNOWN");
         }
         private void OnBanned(BannedEventArgs ev)
         {
-            CreateMessage("Banned", "(someone)", ev.Target.Nickname);
+            CreateMessage("Banned", "(someone)", ev.Target?.Nickname ?? "UNKNOWN");
         }
         private void OnInteractingDoor(InteractingDoorEventArgs ev)
         {
@@ -343,7 +342,7 @@ namespace Control
         }
         private void OnIntercomSpeaking(IntercomSpeakingEventArgs ev)
         {
-            CreateMessage("IntercomSpeaking", "(someone)", ev.Player.Nickname);
+            CreateMessage("IntercomSpeaking", "(someone)", ev.Player?.Nickname ?? "UNKNOWN");
         }
         private void OnHandcuffing(HandcuffingEventArgs ev)
         {
