@@ -53,7 +53,7 @@ ThrowingGrenade: (someone) threw a grenade!
 Hurting: (someone) was hurt by (something)
 Dying: (someone) was killed by (somebody).
 Kicked: (someone) was kicked.
-Banned: (someone) was baned.
+Banned: (someone) was banned.
 InteractingDoor: (someone) interacted with a door
 InteractingElevator: (someone) interacted with an elevator
 InteractingLocker: (someone) interacted with a locker
