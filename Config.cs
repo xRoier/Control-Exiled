@@ -3,24 +3,48 @@ using Exiled.API.Interfaces;
 
 namespace Control
 {
-    public sealed class Config : IConfig
-    {
-        public bool IsEnabled { get; set; } = true;
-        public bool AreDebugLogsEnabled { get; set; } = false;
-        public bool IsTheAutoupdaterEnabled { get; set; } = false;
+public sealed class Config : IConfig
+{
+    public bool IsEnabled {
+        get;
+        set;
+    } = true;
+    public bool AreDebugLogsEnabled {
+        get;
+        set;
+    } = false;
+    public bool IsTheAutoupdaterEnabled {
+        get;
+        set;
+    } = false;
 
-        [Description("Get your server key in the website (Keep this secret!)")]
-        public string SecretKey { get; set; } = "0000000000000000000000000000000";
+    [Description("Get your server key in the website (Keep this secret!)")]
+    public string SecretKey {
+        get;
+        set;
+    } = "0000000000000000000000000000000";
 
-        [Description("Dashboard Settings")] 
-        public string[] staffGroups { get; set; } = {"moderator", "admin", "owner"};
-        public string[] adminGroups { get; set; } = {"admin", "owner"};
-        
-        [Description("Webhook configs")] 
-        public string Username { get; set; } = "Control Logs";
-        public string AvatarUrl { get; set; } = "https://imgur.com/ZvHGf6D.png";
+    [Description("Dashboard Settings")]
+    public string[] staffGroups {
+        get;
+        set;
+    } = {"moderator", "admin", "owner"};
+    public string[] adminGroups {
+        get;
+        set;
+    } = {"admin", "owner"};
 
-        public string yamlTranslation = @"Decontaminating: Light zone is in decontamination.
+    [Description("Webhook configs")]
+    public string Username {
+        get;
+        set;
+    } = "Control Logs";
+    public string AvatarUrl {
+        get;
+        set;
+    } = "https://imgur.com/ZvHGf6D.png";
+
+    public string yamlTranslation = @"Decontaminating: Light zone is in decontamination.
 GeneratorActivated: A generator was activated!
 Detonated: The warhead was detonated!
 Starting: (someone) started the warhead!
@@ -70,5 +94,6 @@ ChangingGroup: (someone) changed of group to (somegroup)
 ChangingItem: (someone) changed of item to (something)
 Activating: (someone) activated the 914
 Containing: (someone) was contained as SCP-106"
-	        ;}
+                                    ;
+}
 }
