@@ -1,48 +1,54 @@
 ﻿using System.ComponentModel;
 using Exiled.API.Interfaces;
 
-namespace Control
-{
-public sealed class Config : IConfig
-{
-    public bool IsEnabled {
-        get;
-        set;
-    } = true;
-    public bool AreDebugLogsEnabled {
-        get;
-        set;
-    } = false;
-    public bool IsTheAutoupdaterEnabled {
-        get;
-        set;
-    } = false;
+namespace Control {
+public sealed class Config : IConfig {
+  public bool IsEnabled {
+    get;
+    set;
+  }
+  = true;
+  public bool AreDebugLogsEnabled {
+    get;
+    set;
+  }
+  = false;
+  public bool IsTheAutoupdaterEnabled {
+    get;
+    set;
+  }
+  = false;
 
-    [Description("Get your server key in the website (Keep this secret!)")]
-    public string SecretKey {
-        get;
-        set;
-    } = "0000000000000000000000000000000";
+  [Description("Get your server key in the website (Keep this secret!)")]
+  public string SecretKey {
+    get;
+    set;
+  }
+  = "0000000000000000000000000000000";
 
-    [Description("Dashboard Settings")]
-    public string[] staffGroups {
-        get;
-        set;
-    } = {"moderator", "admin", "owner"};
-    public string[] adminGroups {
-        get;
-        set;
-    } = {"admin", "owner"};
+  [Description("Dashboard Settings")]
+  public string[] staffGroups {
+    get;
+    set;
+  }
+  = {"moderator", "admin", "owner"};
+  public string[] adminGroups {
+    get;
+    set;
+  }
+  = {"admin", "owner"};
 
-    [Description("Webhook configs")]
-    public string Username {
-        get;
-        set;
-    } = "Control Logs";
-    public string AvatarUrl {
-        get;
-        set;
-    } = "https://imgur.com/ZvHGf6D.png";
+  [Description("Webhook configs")]
+  public string Username {
+    get;
+    set;
+  }
+  = "Control Logs";
+  public string AvatarUrl {
+    get;
+    set;
+  }
+  = "https://imgur.com/ZvHGf6D.png";
 
     public string yamlTranslation = @"Decontaminating: Light zone is in decontamination.
 GeneratorActivated: A generator was activated!
