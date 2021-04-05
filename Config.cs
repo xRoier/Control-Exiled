@@ -7,6 +7,7 @@ namespace Control
     {
         public bool IsEnabled { get; set; } = true;
         public bool AreDebugLogsEnabled { get; set; } = false;
+        public bool IsTheAutoupdaterEnabled { get; set; } = false;
 
         [Description("Get your server key in the website (Keep this secret!)")]
         public string SecretKey { get; set; } = "0000000000000000000000000000000";

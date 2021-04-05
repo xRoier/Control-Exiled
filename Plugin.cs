@@ -20,7 +20,7 @@ namespace Control
         public override string Name { get; } = "Control";
         public override string Prefix { get; } = "Control";
         public override string Author { get; } = "Jesus-QC";
-        public override Version Version { get; } = new Version(0, 0, 1, 4);
+        public override Version Version { get; } = new Version(0, 0, 1, 5);
         public override Version RequiredExiledVersion { get; } = new Version(2, 8, 0);
         public override PluginPriority Priority { get; } = PluginPriority.Lower;
 
@@ -40,8 +40,9 @@ namespace Control
         
         public override void OnEnabled()
         {
-            updater = new AutoUpdater(this);
-            updater.CheckUpdates();
+            if(Config.IsTheAutoupdaterEnabled)
+                updater = new AutoUpdater(this);
+            updater?.CheckUpdates();
 
             if (!Directory.Exists(directorypath))
             {
@@ -494,7 +495,7 @@ namespace Control
             {
                 username = Config.Username,
                 avatar_url = Config.AvatarUrl,
-                content = $"**[{DateTime.Now:T}] [{Event}]** {desc}",
+                content = $"**[{DateTime.Now:T}] [{Event}]** {desc.Replace("@", "")}",
                 tts = false,
             };
 
@@ -534,8 +535,7 @@ namespace Control
         }
         public static string getFileName(string url)
         {
-            HttpWebRequest req =
-                (HttpWebRequest) WebRequest.Create(url);
+            HttpWebRequest req = (HttpWebRequest) WebRequest.Create(url);
             HttpWebResponse resp = req.GetResponse() as HttpWebResponse;
             string header_contentDisposition = resp.Headers["content-disposition"];
             string escaped_filename = new ContentDisposition(header_contentDisposition).FileName;
@@ -586,7 +586,7 @@ namespace Control
                 else
                 {
                     Log.Info("Control - Update received");
-                    updater.CheckUpdates();
+                    updater?.CheckUpdates();
                 }
             }
             else if (message == "2")
