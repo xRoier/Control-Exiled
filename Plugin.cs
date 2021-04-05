@@ -36,10 +36,11 @@ namespace Control
         public AutoUpdater updater;
 
         private static List<CoroutineHandle> _coroutines = new List<CoroutineHandle>();
-        
+
         public override void OnEnabled()
         {
-            if(Config.IsTheAutoupdaterEnabled)
+
+            if (Config.IsTheAutoupdaterEnabled)
                 updater = new AutoUpdater(this);
             updater?.CheckUpdates();
 
