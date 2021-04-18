@@ -1,4 +1,4 @@
-# Control-Exiled
-https://control.jesus-qc.es
+# Control
+Control, a plugin to take control of your scpsl server!
 
-A exiled SCP:SL plugin to take control of your server
+https://controlplugin.live
