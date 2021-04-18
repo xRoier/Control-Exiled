@@ -15,28 +15,31 @@ namespace Control
         {
             try
             {
-                var httpWebRequest = (HttpWebRequest) WebRequest.Create("https://control.jesus-qc.es/api/version");
-                httpWebRequest.Method = "GET";
-                var httpResponse = (HttpWebResponse) httpWebRequest.GetResponse();
-                using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
+                using (var client = new WebClient())
                 {
-                    var result = streamReader.ReadToEnd();
+                    string result = client.DownloadString("https://control.jesus-qc.es/api/version");
                     if (new Version(result) > _plugin.Version)
                         Update();
                 }
             }
             catch (Exception)
             {
-                Log.Warn("There was an issue updating the plugin.");
+                Log.Warn("There was an issue checking for updates.");
             }
-
         }
 
         public void Update()
         {
-            using (var client = new WebClient())
+            try
             {
-                client.DownloadFile("https://github.com/Control-Plugin/Control-Exiled/releases/latest/download/Control-Exiled.dll", _plugin.GetPath());
+                using (var client = new WebClient())
+                {
+                    client.DownloadFile("https://github.com/Control-Plugin/Control-Exiled/releases/latest/download/Control-Exiled.dll", _plugin.GetPath());
+                }
+            }
+            catch (Exception)
+            {
+                Log.Warn("There was an issue updating the plugin.");
             }
         }
     }
