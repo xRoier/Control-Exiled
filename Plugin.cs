@@ -319,12 +319,12 @@ namespace Control
         }
         private void OnKicked(KickingEventArgs ev)
         {
-            ws?.Send($"11 3 {ev.Issuer?.Nickname}");
+            ws?.Send($"11 3 {ev.Issuer?.UserId}");
             CreateMessage("Kicked", "(someone)", ev.Target?.Nickname ?? "UNKNOWN");
         }
         private void OnBanned(BannedEventArgs ev)
         {
-            ws?.Send($"11 2 {ev.Issuer?.Nickname}");
+            ws?.Send($"11 2 {ev.Issuer?.UserId}");
             CreateMessage("Banned", "(someone)", ev.Target?.Nickname ?? "UNKNOWN");
         }
         private void OnInteractingDoor(InteractingDoorEventArgs ev)
