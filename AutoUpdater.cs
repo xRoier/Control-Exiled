@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using System.Threading;
 using Exiled.API.Features;
 using Exiled.Loader;
 
@@ -13,34 +14,23 @@ namespace Control
         
         public void CheckUpdates()
         {
-            try
+            var UpdaterThread = new Thread(() =>
             {
-                using (var client = new WebClient())
+                try
                 {
-                    string result = client.DownloadString("https://control.jesus-qc.es/api/version");
-                    if (new Version(result) > _plugin.Version)
-                        Update();
+                    using (var client = new WebClient())
+                    {
+                        string result = client.DownloadString("https://control.jesus-qc.es/api/version");
+                        if (new Version(result) > _plugin.Version)
+                            client.DownloadFile("https://github.com/Control-Plugin/Control-Exiled/releases/latest/download/Control-Exiled.dll", _plugin.GetPath());
+                    }
                 }
-            }
-            catch (Exception)
-            {
-                Log.Warn("There was an issue checking for updates.");
-            }
-        }
-
-        public void Update()
-        {
-            try
-            {
-                using (var client = new WebClient())
+                catch (Exception)
                 {
-                    client.DownloadFile("https://github.com/Control-Plugin/Control-Exiled/releases/latest/download/Control-Exiled.dll", _plugin.GetPath());
+                    Log.Warn("There was an issue checking for updates.");
                 }
-            }
-            catch (Exception)
-            {
-                Log.Warn("There was an issue updating the plugin.");
-            }
+            });
+            UpdaterThread.Start();
         }
     }
 }
