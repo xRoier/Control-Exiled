@@ -1,4 +1,4 @@
-# ARCHIVED RIGHT NOW, UPDATING IT
+# ARCHIVED
 
 [![Github All Releases](https://img.shields.io/github/downloads/Control-Plugin/Control-Exiled/total?color=blueviolet&style=for-the-badge)]()
 # UPDATING
